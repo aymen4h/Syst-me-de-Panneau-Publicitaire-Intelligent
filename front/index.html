@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload MP4 Video</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .upload-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Header */
+        .upload-container h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Input styles */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="file"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 1rem;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Status message */
+        .status-message {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload MP4 Video</h1>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="video">Select a .mp4 file:</label>
+                <input type="file" id="video" name="video" accept=".mp4" required>
+            </div>
+            <div class="form-group">
+                <label for="regle">Enter a rule:</label>
+                <input type="text" id="regle" name="regle" placeholder="Enter a rule" required>
+            </div>
+            <button type="submit" class="btn">Upload</button>
+        </form>
+        <p id="status" class="status-message"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const status = document.getElementById('status');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const videoInput = document.getElementById('video');
+            const regleInput = document.getElementById('regle');
+            if (!videoInput.files.length) {
+                status.textContent = "Please select a video file.";
+                return;
+            }
+            if (!regleInput.value.trim()) {
+                status.textContent = "Please enter a rule.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('video', videoInput.files[0]);
+            formData.append('regle', regleInput.value.trim());
+
+            status.textContent = "Uploading...";
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/upload-video/', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    status.textContent = "Video uploaded successfully!";
+                } else {
+                    status.textContent = "Failed to upload video.";
+                }
+            } catch (error) {
+                status.textContent = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
